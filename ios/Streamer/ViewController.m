@@ -1,23 +1,31 @@
 #import "ViewController.h"
+#import <AVFoundation/AVFoundation.h>
 
 #define FRAMES_PER_SECOND_MOD 7
 
 @implementation ViewController {
 	CVServerTransactionConnection *serverTransactionConnection;
 	id<CVServerConnectionInput> serverConnectionInput;
+    CGRect landscapeVideoRect;
 	
+#if !(TARGET_IPHONE_SIMULATOR)
 	AVCaptureSession *captureSession;
 	AVCaptureVideoPreviewLayer *previewLayer;
 	int frameMod;
-	
 	bool capturing;
+#endif
+    AVPlayer* player;
+    AVPlayerLayer *predefPreviewLayer;
 }
 
 #pragma mark - Housekeeping
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    landscapeVideoRect = CGRectMake(0, 0, 568, 320); //CGRectMake(30, 100, 400, 200);
+#if !(TARGET_IPHONE_SIMULATOR)
 	capturing = false;
+#endif
 }
 
 - (void)didReceiveMemoryWarning {
@@ -25,6 +33,7 @@
 }
 
 - (CVServerConnection*)serverConnection {
+    [self.ip resignFirstResponder];
 	NSString* server = [NSString stringWithFormat:@"http://%@:8080/recog", self.ip.text];
 	NSURL *serverBaseUrl = [NSURL URLWithString:server];
 	return [CVServerConnection connection:serverBaseUrl];
@@ -39,9 +48,10 @@
 	
 	// Preview layer that will show the video
 	previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:captureSession];
-	previewLayer.frame = CGRectMake(0, 100, 320, 640);
+	previewLayer.frame = landscapeVideoRect;
 	previewLayer.contentsGravity = kCAGravityResizeAspectFill;
 	previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+    previewLayer.zPosition = -1;
 	[self.view.layer addSublayer:previewLayer];
 	
 	// begin the capture
@@ -111,9 +121,10 @@
 #pragma mark - UI
 
 - (IBAction)startStop:(id)sender {
+#if !(TARGET_IPHONE_SIMULATOR)
 	if (capturing) {
 		[self stopCapture];
-		[self.startStopButton setTitle:@"Start" forState:UIControlStateNormal];
+		[self.startStopButton setTitle:@"Record" forState:UIControlStateNormal];
 		[self.startStopButton setTintColor:[UIColor greenColor]];
 		capturing = false;
 		self.predefButton.enabled = true;
@@ -123,17 +134,23 @@
 		[self.startStopButton setTintColor:[UIColor redColor]];
 		capturing = true;
 	}
+#endif
 }
 
 - (IBAction)predefStopStart:(id)sender {
 	self.startStopButton.enabled = false;
-
+    self.predefButton.enabled = false;
 	serverTransactionConnection = [[self serverConnection] begin:nil];
 	serverConnectionInput = [serverTransactionConnection h264Input:self];
-	
+    
+    [NSThread detachNewThreadSelector:@selector(predefPlay:) toTarget:self withObject:nil];
+    [NSThread detachNewThreadSelector:@selector(predefSubmit:) toTarget:self withObject:nil];
+}
+
+- (void)predefSubmit:(id)_unused {
 	dispatch_queue_t queue = dispatch_queue_create("Predef", NULL);
 	dispatch_sync(queue, ^{
-		NSString *filePath = [[NSBundle mainBundle] pathForResource:@"coins2" ofType:@"mp4"];
+        NSString *filePath = [[NSBundle mainBundle] pathForResource:@"coins2" ofType:@"mp4"];
 		NSFileHandle* fileHandle = [NSFileHandle fileHandleForReadingAtPath:filePath];
 		while (true) {
 			NSData *data = [fileHandle readDataOfLength:16000];
@@ -144,7 +161,33 @@
 		[serverConnectionInput stopRunning];
 		[fileHandle closeFile];
 	});
-	self.startStopButton.enabled = true;
+}
+
+- (void)predefPlay:(id)_unused {
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"coins2" ofType:@"mp4"];
+    player = [AVPlayer playerWithURL:[NSURL fileURLWithPath:filePath]];
+    predefPreviewLayer = [AVPlayerLayer playerLayerWithPlayer:player];
+    predefPreviewLayer.drawsAsynchronously = true;
+	predefPreviewLayer.frame = landscapeVideoRect;
+	predefPreviewLayer.contentsGravity = kCAGravityResizeAspectFill;
+	predefPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+    predefPreviewLayer.zPosition = -1;
+	[self.view.layer addSublayer:predefPreviewLayer];
+    [NSThread sleepForTimeInterval:2.0];
+    player.actionAtItemEnd = AVPlayerActionAtItemEndPause;
+    [player addObserver:self forKeyPath:@"rate" options:0 context:0];
+    [player play];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if (context == 0) {
+        if (player.rate == 0.0) {
+            [player removeObserver:self forKeyPath:@"rate"];
+            [predefPreviewLayer removeFromSuperlayer];
+            self.startStopButton.enabled = true;
+            self.predefButton.enabled = true;
+        }
+    }
 }
 
 #pragma mark - CVServerConnectionDelegate methods
