@@ -95,11 +95,11 @@ private[core] class RecogSessionActor(amqpConnection: ActorRef, jabberActor: Act
     case Event(Image(image), Starting(minCoins)) =>
       // Image with no decoder yet. We will be needing the ChunkingDecoderContext.
       val decoder = new ChunkingDecoderContext(countCoins(minCoins))
-      decoder.decode(image, false)
+      decoder.decode(image, true)
       stay() using Running(decoder)
     case Event(Image(image), Running(decoder)) if image.length > 0 =>
       // Image with existing decoder. Shut up and apply.
-      decoder.decode(image, false)
+      decoder.decode(image, true)
       stay()
     case Event(Image(_), Running(decoder)) =>
       // Empty image (following the previous case)

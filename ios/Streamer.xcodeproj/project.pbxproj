@@ -297,6 +297,11 @@
 			attributes = {
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = Eigengo;
+				TargetAttributes = {
+					54F8702117462320006F6C0F = {
+						DevelopmentTeam = K5TCBGB2PR;
+					};
+				};
 			};
 			buildConfigurationList = 54F8701D17462320006F6C0F /* Build configuration list for PBXProject "Streamer" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -444,6 +449,8 @@
 		54F8704617462320006F6C0F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Streamer/Streamer-Prefix.pch";
 				INFOPLIST_FILE = "Streamer/Streamer-Info.plist";
@@ -452,6 +459,7 @@
 					"\"$(SRCROOT)/Streamer\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -459,6 +467,8 @@
 		54F8704717462320006F6C0F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Streamer/Streamer-Prefix.pch";
 				INFOPLIST_FILE = "Streamer/Streamer-Info.plist";
@@ -467,6 +477,7 @@
 					"\"$(SRCROOT)/Streamer\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

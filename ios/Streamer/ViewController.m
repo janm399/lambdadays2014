@@ -74,6 +74,7 @@
 	
 	// start the capture session
 	[captureSession startRunning];
+    previewLayer.connection.videoOrientation = UIInterfaceOrientationLandscapeLeft;
 	
 	// begin a transaction
 	serverTransactionConnection = [[self serverConnection] begin:nil];
