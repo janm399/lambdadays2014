@@ -6,7 +6,6 @@ import com.github.sstone.amqp.{ ConnectionOwner, RpcClient }
 import akka.util.Timeout
 import com.github.sstone.amqp.Amqp.Publish
 import com.github.sstone.amqp.RpcClient.Response
-import scala.Some
 import com.github.sstone.amqp.RpcClient.Request
 import com.github.sstone.amqp.Amqp.Delivery
 import spray.json.{ JsonParser, JsonReader, DefaultJsonProtocol }
