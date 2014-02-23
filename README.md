@@ -82,8 +82,8 @@ The difficult part is now over; the next step is to build the Scala codebase. Yo
 
 To see everything running, you will need to configure the RabbitMQ exchange called ``cm.exchange`` containing the queue ``cm.coins.queue``, routed using the key ``cm.coins.key``.
 
-![Exchange](../../master/exchange.png)
-![Queue](../../master/queue.png)
+![Exchange](exchanges.png)
+![Queue](queues.png)
 
 ---
 
