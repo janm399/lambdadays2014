@@ -9,7 +9,8 @@ class CoordinatorActor(amqpConnection: ActorRef) extends Actor {
 
   def receive = {
     case b @ Begin(_) =>
-      val rsa = context.actorOf(Props(new RecogSessionActor(amqpConnection, output)), UUID.randomUUID().toString)
+      val rsa = context.actorOf(Props(new RecogSessionActor(amqpConnection, output)), 
+                                      UUID.randomUUID().toString)
       rsa.forward(b)
     case SingleImage(id, image) =>
       sessionActorFor(id).tell(RecogSessionActor.Image(image), sender)
@@ -134,7 +135,6 @@ trait Core {
   // start the actor system
   implicit lazy val system = ActorSystem("recog")
 
-  // create a "connection owner" actor, which will try and reconnect automatically if the connection ins lost
   lazy val amqpConnection = system.actorOf(Props(new ConnectionOwner(amqpConnectionFactory)))
 
   // create the coordinator actor
@@ -247,9 +247,11 @@ class RecogServiceActor(coordinator: ActorRef) extends Actor with BasicRecogServ
     // clients get connected to self (singleton handler)
     case _: Http.Connected => sender ! Http.Register(self)
     // POST to /recog/...
-    case request: HttpRequest => normal(RequestContext(request, sender, request.uri.path).withDefaultSender(sender))
+    case request: HttpRequest => 
+      normal(RequestContext(request, sender, request.uri.path).withDefaultSender(sender))
     // stream begin to /recog/[h264|mjpeg]/:id
-    case ChunkedRequestStart(request) => chunked(RequestContext(request, sender, request.uri.path).withDefaultSender(sender))
+    case ChunkedRequestStart(request) => 
+      chunked(RequestContext(request, sender, request.uri.path).withDefaultSender(sender))
   }
 
 }
