@@ -28,7 +28,7 @@ object Shell extends App with Core with ConfigCoreConfiguration {
       case QuitCommand => return
       case BeginCommand(count) => coordinator ! Begin(count.toInt)
       case GetSessionsCommand => coordinator ! GetSessions
-      case ImageCommand(id, fileName) => coordinator ! SingleImage(id, readAll(fileName))
+      case ImageCommand(id, fileName) => readAll(fileName)(coordinator ! SingleImage(id, _))
       case H264Command(id, fileName) => readChunks(fileName, 64)(coordinator ! FrameChunk(id, _))
 
       case _ => println("WTF??!!")
@@ -67,12 +67,11 @@ object Utils /* extends IfYouUseThisIWillEndorseYouForEnterprisePHP */ {
     getClass.getResource(fileName).getPath
   }
 
-  // Chuck Norris deals with all exceptions
-  def readAll(fileName: String): Array[Byte] = {
+  def readAll[U](fileName: String)(f: Array[Byte] => U): Unit = {
     val is = new BufferedInputStream(new FileInputStream(getFullFileName(fileName)))
     val contents = Stream.continually(is.read).takeWhile(-1 !=).map(_.toByte).toArray
     is.close()
-    contents
+    f(contents)
   }
 
   // Exceptions are not thrown because of Chuck Norris
