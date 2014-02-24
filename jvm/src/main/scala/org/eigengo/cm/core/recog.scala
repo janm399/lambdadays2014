@@ -51,9 +51,9 @@ trait RecogSessionActorFormats extends DefaultJsonProtocol {
  * and using ``become`` and ``unbecome`` of the ``akka.actor.ActorDSL._`` would be cumbersome.
  *
  * @param amqpConnection the AMQP connection we will use to create individual 'channels'
- * @param jabberActor the actor that will receive our output
+ * @param outputActor the actor that will receive our output
  */
-private[core] class RecogSessionActor(amqpConnection: ActorRef, jabberActor: ActorRef) extends
+private[core] class RecogSessionActor(amqpConnection: ActorRef, outputActor: ActorRef) extends
   Actor with FSM[RecogSessionActor.State, RecogSessionActor.Data] with
   AmqpOperations with RecogSessionActorFormats with ImageEncoding {
   import RecogSessionActor._
@@ -126,7 +126,7 @@ private[core] class RecogSessionActor(amqpConnection: ActorRef, jabberActor: Act
 
   def countCoins(minCoins: Int)(f: Array[Byte]): Unit =
     amqpAsk[CoinResponse](amqp)("cm.exchange", "cm.coins.key", mkImagePayload(f)) onSuccess {
-      case res => if (res.coins.size >= minCoins) jabberActor ! res
+      case res => if (res.coins.size >= minCoins) outputActor ! res
     }
 
 }
