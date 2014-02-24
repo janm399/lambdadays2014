@@ -238,7 +238,8 @@ trait StreamingRecogService extends Directives {
 
 }
 
-class RecogServiceActor(coordinator: ActorRef) extends Actor with BasicRecogService with StreamingRecogService {
+class RecogServiceActor(coordinator: ActorRef) 
+  extends Actor with BasicRecogService with StreamingRecogService {
   import context.dispatcher
   val normal = normalRoute(coordinator)
   val chunked = chunkedRoute(coordinator)
