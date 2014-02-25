@@ -10,9 +10,6 @@ RabbitRpcServer::RabbitRpcServer(queue, exchange, routingKey) {
 }
 
 std::string Main::handleMessage(const AmqpClient::BasicMessage::ptr_t message, const AmqpClient::Channel::ptr_t channel) {
-#ifdef DEBUG
-	std::cout << "Have message";
-#endif
 	Jzon::Object responseJson;
 	try {
 		// get the message, read the image
@@ -46,9 +43,6 @@ std::string Main::handleMessage(const AmqpClient::BasicMessage::ptr_t message, c
 		responseJson.Add("succeeded", false);
 	}
 
-#ifdef DEBUG
-	std::cout << message->ReplyTo() << std::endl;
-#endif
 	Jzon::Writer writer(responseJson, Jzon::NoFormat);
 	writer.Write();
 
