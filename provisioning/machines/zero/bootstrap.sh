@@ -1,7 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 # Chicken & egg problem: when the machine boots, we install Puppet so that we can run through
 # the manifests and modules to actually provision the components we need.
 
-sudo rpm -ivh https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-7.noarch.rpm
-sudo yum install puppet -y
+wget https://apt.puppetlabs.com/puppetlabs-release-raring.deb
+sudo dpkg -i puppetlabs-release-raring.deb
+sudo apt-get update
+sudo puppet module install puppetlabs-rabbitmq

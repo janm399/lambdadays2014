@@ -37,3 +37,5 @@ build/
 *.o
 .idea
 *.iml
+.vagrant
+
