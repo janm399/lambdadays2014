@@ -1,0 +1,14 @@
+SET(test_EXECUTABLE documentocr-test)
+INCLUDE_DIRECTORIES(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/src "${PROJECT_SOURCE_DIR}/..")
+SET_PROPERTY(DIRECTORY . APPEND PROPERTY COMPILE_DEFINITIONS GTEST_USE_OWN_TR1_TUPLE=1)
+
+FILE(GLOB MainSources ../src/*.cpp)
+FILE(GLOB PreprocessorSources ../src/preprocessor/*.cpp)
+FILE(GLOB SplitterSources ../src/splitter/*.cpp)
+
+ADD_EXECUTABLE(${test_EXECUTABLE} superres.cpp ${PreprocessorSources} ${SplitterSources})
+SET_PROPERTY(DIRECTORY . APPEND PROPERTY COMPILE_DEFINITIONS WITH_RINGS)
+
+TARGET_LINK_LIBRARIES(${test_EXECUTABLE} ${Rabbitmqc_LIBRARY} ${Boost_LIBRARIES} ${SimpleAmqpClient_LIBRARY} ${OpenCV_LIBS} gtest gtest_main)
+
+FILE(COPY ${PROJECT_SOURCE_DIR}/images DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

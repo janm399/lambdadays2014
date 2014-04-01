@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.8) 
-project (recog) 
+project (documentocr) 
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Modules)
 set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
@@ -26,4 +26,4 @@ set(GTEST_ROOT "${PROJECT_SOURCE_DIR}/../gtest-1.6.0")
 add_subdirectory("${PROJECT_SOURCE_DIR}/../gtest-1.6.0" "${CMAKE_CURRENT_BINARY_DIR}/gtest")
 add_subdirectory(test)
 
-add_test(recog-test test/recog-test)
+add_test(documentocr-test test/documentocr-test)
