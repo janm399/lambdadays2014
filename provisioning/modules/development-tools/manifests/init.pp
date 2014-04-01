@@ -11,4 +11,8 @@ class development-tools {
     ensure => 'installed'
   }
 
+  package { 'unzip':
+    ensure => 'installed'
+  }
+
 }
